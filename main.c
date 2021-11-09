@@ -205,7 +205,7 @@ uint32_t main(void)
     GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN0); //on led
     // Configure P2RGB as output
     GPIO_setAsOutputPin(GPIO_PORT_P2, 0x07);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P2, 0x07); //off led
+    GPIO_setOutputLowOnPin(GPIO_PORT_P2, 0x07); //off led
 
     /* Configuring P1.1 (button) as an input and enable PORT1 interrupts */
     MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1);
