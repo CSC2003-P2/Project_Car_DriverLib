@@ -136,16 +136,7 @@ void motorTurnRight(){
     motorRightReverse();
     motorLeftForward();
 }
-//void demoMotor(){
-//    BothMotorForward();
-//    Delay(1000000);
-//    BothMotorReverse();
-//    Delay(1000000);
-//    motorTurnLeft();
-//    Delay(1000000);
-//    motorTurnRight();
-//    Delay(1000000);
-//}
+
 /////////////////////////////////////////////Motor////////////////////////////////////////////////
 
 uint32_t main(void)
@@ -269,5 +260,156 @@ void PORT2_IRQHandler(void){
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////Ultrasonic To Be Integrated with proj above///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
+//
+///* Standard Includes */
+//#include <stdint.h>
+//#include <stdbool.h>
+//// Start pulse for Ultrasonic timer
+//bool start_pulse=0;
+//
+//const Timer_A_ContinuousModeConfig contmConfig =
+//{
+//       TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
+//
+//         TIMER_A_CLOCKSOURCE_DIVIDER_64,          // SMCLK/1 = 3MHz
+//        TIMER_A_TAIE_INTERRUPT_DISABLE,         // Disable Timer interrupt
+//        TIMER_A_DO_CLEAR                        // Clear value
+//};
+//
+//const Timer_A_CompareModeConfig CCR2Config =
+//{
+//        TIMER_A_CAPTURECOMPARE_REGISTER_2,
+//        TIMER_A_CAPTURECOMPARE_INTERRUPT_DISABLE,
+//        TIMER_A_OUTPUTMODE_SET_RESET,
+//        0x4000//0xFFFE for very slow
+//};
+//
+//int main(void)
+//{
+//
+//    //Tval1= timer value start of echo, Tval2 = Timer value at end of echo
+//    uint32_t tval1, tval2;
+//
+//    //No. of timer ticks from start of echo to end of echo
+//    uint32_t noOfTicksFromUltraSonic;
+//
+//    //Distance of obstacle from ultraSonicSensor
+//    float dist;
+//
+//    /* Halting the Watchdog */
+//    MAP_WDT_A_holdTimer();
+//
+//    /* Configuring P1.0 as output and P1.1 (switch) as input */
+//    MAP_GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
+//
+//
+//    GPIO_setAsOutputPin(GPIO_PORT_P2, 0x07);
+//    GPIO_setOutputLowOnPin(GPIO_PORT_P2, 0x07); //off led
+//
+//
+//    /* IVM Configure P2.5 to output timer TA0.2 (secondary module function, output)*/
+//    MAP_GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN5, GPIO_PRIMARY_MODULE_FUNCTION);
+//
+//    /* IVM Configure P3.0 as input */
+//    MAP_GPIO_setAsInputPin(GPIO_PORT_P3, GPIO_PIN0);
+//
+//
+//    /* Configuring Timer_A0 CCR0 and CCR2 then set for continuous Mode */
+//    MAP_Timer_A_initCompare(TIMER_A0_BASE, &CCR2Config);   //CCR2 (turns OUT2 on)
+//    MAP_Timer_A_configureContinuousMode(TIMER_A0_BASE, &contmConfig);
+//    MAP_Timer_A_startCounter(TIMER_A0_BASE, TIMER_A_CONTINUOUS_MODE);
+//
+//    /* Configuring P1.1 (button) as an input and enable PORT1 interrupts */
+//    MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1);
+//    MAP_GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN1);
+//    MAP_GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN1);
+//    MAP_Interrupt_enableInterrupt(INT_PORT1);
+//
+//    /* Configuring P3.0 (ECHO) as an input and enable PORT3 interrupts */
+//    MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P3, GPIO_PIN0);
+//    MAP_GPIO_clearInterruptFlag(GPIO_PORT_P3, GPIO_PIN0);
+//    MAP_GPIO_enableInterrupt(GPIO_PORT_P3, GPIO_PIN0);
+//    MAP_GPIO_interruptEdgeSelect(GPIO_PORT_P3, GPIO_PIN0, GPIO_LOW_TO_HIGH_TRANSITION);
+//    MAP_Interrupt_enableInterrupt(INT_PORT3);
+//
+//    /* Enabling MASTER interrupts */
+//    MAP_Interrupt_enableMaster();
+//
+//    printf("Starting now\n");
+//
+//    while (1)
+//    {
+//        // If distance < 20cm
+//        if (dist<20){
+//            //Turn ON LED 2
+//            GPIO_setOutputHighOnPin(GPIO_PORT_P2, 0x07); //off led
+//        }// Distance > 20cm
+//        else{
+//            // TUrn OFF LED
+//            GPIO_setOutputLowOnPin(GPIO_PORT_P2, 0x07); //off led
+//        }
+// //       MAP_PCM_gotoLPM3(); /* Going to Low Power Mode 3*/
+//          if(start_pulse==1)
+//          {
+//              printf("Starting now\n");
+//              //Get timer value of start
+//              tval1 = MAP_Timer_A_getCounterValue(TIMER_A0_BASE);
+//              //busy wait for the timer input value to drop
+//              while((MAP_GPIO_getInputPinValue(GPIO_PORT_P3, GPIO_PIN0) & 0x1)==1);
+//              //Get timer value of end
+//              tval2 = MAP_Timer_A_getCounterValue(TIMER_A0_BASE);
+//              //Reset Pulse
+//              start_pulse=0;
+//
+//              //If tval1 > tval2 indicating timer overflow
+//              if(tval1 > tval2)   //it means the 16-bit counter hit 0xffff and wrapped back to 0x0000
+//                   tval2=tval2+0xffff;
+//
+//              //Interval of ticks between start and end
+//              noOfTicksFromUltraSonic = tval2-tval1;
+//
+//              printf(" noOfTicksFromUltraSonic: %d \n", (int)(noOfTicksFromUltraSonic));
+//
+//
+//              //Distance = (SPEED OF SOUND) * ((TimerAtickDuration *noOfTicksFromUltraSonic)/2)
+//              dist=( 100.0 * 340.0) * ( (0.000021333 * (float)noOfTicksFromUltraSonic )*0.5)  ;
+//
+//              printf("%d cm\n", (int)(dist));
+//          }
+//
+//    }
+//}
+//
+///* GPIO ISR for PORT 1 (the button) */
+//void PORT1_IRQHandler(void)
+//{
+//    uint32_t status;
+//
+//    status = MAP_GPIO_getEnabledInterruptStatus(GPIO_PORT_P1);
+//    MAP_GPIO_clearInterruptFlag(GPIO_PORT_P1, status);
+//
+//    /* Toggling the output on the LED */
+//    if(status & GPIO_PIN1)
+//    {
+//        MAP_GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
+//    }
+//
+//}
+//
+//
+///* GPIO ISR for PORT 3 (the echo value) */
+//void PORT3_IRQHandler (void)
+//{
+//    uint32_t status;
+//
+//    status = MAP_GPIO_getEnabledInterruptStatus(GPIO_PORT_P3);
+//    MAP_GPIO_clearInterruptFlag(GPIO_PORT_P3, status);
+//
+//    if(status & GPIO_PIN0) //if this was triggered by PIN0
+//        start_pulse=1;
+//}
 
 
